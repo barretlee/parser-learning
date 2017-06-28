@@ -1,5 +1,12 @@
 import ListLexer from './ListLexer';
 
+/**
+ * LL(1) 语法解析器
+ * 
+ * @export
+ * @class ListParser
+ * @extends {ListLexer}
+ */
 export default class ListParser extends ListLexer {
 
   constructor(input) {
@@ -8,16 +15,16 @@ export default class ListParser extends ListLexer {
 
   // list: '[' elements ']' ;
   list() {
-    this.match(ListLexer.LBRACK);
+    this.match(ListParser.LBRACK);
     this.elements();
-    this.match(ListLexer.RBRACK);
+    this.match(ListParser.RBRACK);
   }
 
   // elements: element (',' element)* ;
   elements() {
     this.element();
-    while(this.lookahead.type === ListLexer.COMMA) {
-      this.match(ListLexer.COMMA);
+    while(this.lookahead.type === ListParser.COMMA) {
+      this.match(ListParser.COMMA);
       this.element();
     }
   }
@@ -25,9 +32,9 @@ export default class ListParser extends ListLexer {
   // element: NAME | list;
   element() {
     const lookahead = this.lookahead;
-    if (lookahead.type === ListLexer.NAME) {
-      this.match(ListLexer.NAME);
-    } else if (lookahead.type === ListLexer.LBRACK) {
+    if (lookahead.type === ListParser.NAME) {
+      this.match(ListParser.NAME);
+    } else if (lookahead.type === ListParser.LBRACK) {
       this.list();
     } else {
       throw new Error(`expecting name or list; found ${lookahead}`);

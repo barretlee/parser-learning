@@ -1,6 +1,6 @@
 import Parser from '../../src/ListParser';
 
-describe('parser', () => {
+describe('LL(1) parser', () => {
 
   it('#array', () => {
     const code = '[a , b ] ';

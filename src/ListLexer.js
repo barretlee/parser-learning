@@ -1,18 +1,36 @@
-import Lexer from './Lexer';
-import Token from './Token';
+import Lexer from './base/Lexer';
+import Token from './base/Token';
 
+/**
+ * LL(1) 词法解析器 + lookahead(1)
+ * 
+ * @export
+ * @class ListLexer
+ * @extends {Lexer}
+ */
 export default class ListLexer extends Lexer {
   
   static NAME = 2;
   static COMMA = 3;
   static LBRACK = 4;
   static RBRACK = 5;
-  static tokenNames = ['n/a', '<EOF>', 'NAME', 'COMMA', 'LBRACK', 'RBRACK'];
+  static EQUALS = 6;
+  static tokenNames = ['n/a', '<EOF>', 'NAME', 'COMMA', 'LBRACK', 'RBRACK', 'EQUALS'];
 
   lookahead = null;
 
-  constructor(input) {
-    super(input);
+  /**
+   * rewrite match method
+   * 
+   * @param {any} x 
+   * @memberof ListLexer
+   */
+  match(x) {
+    if (this.lookahead.type === x) {
+      this.nextToken();
+    } else {
+      throw new Error(`expecting ${x}; found ${this.c}`);
+    }
   }
 
   getTokenName(x) {
@@ -23,8 +41,17 @@ export default class ListLexer extends Lexer {
     return /[a-zA-Z]/.test(this.c);
   }
 
-  nextToken() {
-    while(this.c !== Lexer.EOF) {
+  nextToken(resolve) {
+    resolve = resolve || (token => {
+      if (this.lookahead instanceof Array) {
+        // compatiable for LL(k)
+        this.lookahead.push(token);
+      } else {
+        this.lookahead = token;
+      }
+      return token;
+    });
+    while(this.c !== ListLexer.EOF) {
       switch(this.c) {
         case ' ':
         case '\t':
@@ -34,21 +61,25 @@ export default class ListLexer extends Lexer {
           continue;
         case ',':
           this.consume();
-          return this.lookahead = new Token(ListLexer.COMMA, ',');
+          return resolve(new Token(ListLexer.COMMA, ','));
+          break;
         case '[':
           this.consume();
-          return this.lookahead = new Token(ListLexer.LBRACK, '[');
+          return resolve(new Token(ListLexer.LBRACK, '['));
+          break;
         case ']':
           this.consume();
-          return this.lookahead = new Token(ListLexer.RBRACK, ']');
+          return resolve(new Token(ListLexer.RBRACK, ']'));
+          break;
         default:
           if (this.isLETTER()) {
-            return this.lookahead = this.getName();
+            return resolve(this.getName());
           }
           throw new Error(`invalid charactor: ${this.c}`);
       }
     }
-    return this.lookahead = new Token(Lexer.EOF_TYPE, this.getTokenName(Lexer.EOF_TYPE));
+    const eofTokenName = this.getTokenName(ListLexer.EOF_TYPE);
+    return resolve(new Token(ListLexer.EOF_TYPE, eofTokenName));
   }
 
   wordspace() {

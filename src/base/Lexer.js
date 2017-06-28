@@ -1,3 +1,9 @@
+/**
+ * Base Parser, Abstract Class
+ * 
+ * @export
+ * @class Lexer
+ */
 export default class Lexer {
 
   static EOF = -1;
@@ -21,9 +27,8 @@ export default class Lexer {
   }
 
   match(x) {
-    // console.log(this.lookahead);
-    if (this.lookahead.type === x) {
-      this.nextToken();
+    if (this.c === x) {
+      this.consume();
     } else {
       throw new Error(`expecting ${x}; found ${this.c}`);
     }
