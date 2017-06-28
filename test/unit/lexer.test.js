@@ -1,6 +1,7 @@
 import Lexer from '../../src/ListLexer';
 
 describe('list lexer', () => {
+
   it('#array', () => {
     const code = ' [a , b ] ';
     const lexer = new Lexer(code);
@@ -11,4 +12,5 @@ describe('list lexer', () => {
     }
     expect(ret.join('')).to.eql('[a,b]');
   });
+  
 });

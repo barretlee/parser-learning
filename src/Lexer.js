@@ -21,8 +21,9 @@ export default class Lexer {
   }
 
   match(x) {
-    if (this.c == x) {
-      this.consume();
+    // console.log(this.lookahead);
+    if (this.lookahead.type === x) {
+      this.nextToken();
     } else {
       throw new Error(`expecting ${x}; found ${this.c}`);
     }

@@ -9,6 +9,12 @@ export default class ListLexer extends Lexer {
   static RBRACK = 5;
   static tokenNames = ['n/a', '<EOF>', 'NAME', 'COMMA', 'LBRACK', 'RBRACK'];
 
+  lookahead = null;
+
+  constructor(input) {
+    super(input);
+  }
+
   getTokenName(x) {
     return ListLexer.tokenNames[x];
   }
@@ -28,21 +34,21 @@ export default class ListLexer extends Lexer {
           continue;
         case ',':
           this.consume();
-          return new Token(ListLexer.COMMA, ',');
+          return this.lookahead = new Token(ListLexer.COMMA, ',');
         case '[':
           this.consume();
-          return new Token(ListLexer.LBRACK, '[');
+          return this.lookahead = new Token(ListLexer.LBRACK, '[');
         case ']':
           this.consume();
-          return new Token(ListLexer.RBRACK, ']');
+          return this.lookahead = new Token(ListLexer.RBRACK, ']');
         default:
           if (this.isLETTER()) {
-            return this.getName();
+            return this.lookahead = this.getName();
           }
           throw new Error(`invalid charactor: ${this.c}`);
       }
     }
-    return new Token(Lexer.EOF_TYPE, this.getTokenName(Lexer.EOF_TYPE));
+    return this.lookahead = new Token(Lexer.EOF_TYPE, this.getTokenName(Lexer.EOF_TYPE));
   }
 
   wordspace() {
