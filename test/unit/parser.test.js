@@ -8,5 +8,16 @@ describe('parser', () => {
     parser.nextToken();
     parser.list();
   });
+
+  it('#array parse error', () => {
+    const code = '[a,] ';
+    const parser = new Parser(code);
+    parser.nextToken();
+    try {
+      parser.list();
+    } catch(e) {
+      expect(e).not.to.eql(null);
+    }
+  });
   
 });
